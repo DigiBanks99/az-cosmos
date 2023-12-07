@@ -1,0 +1,25 @@
+﻿.todo-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.todo-list .todo,
+.todo-list .header {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+}
+
+.todo-list .header > div {
+    font-weight: bold;
+    flex: 1;
+}
+
+.todo-list .todo > div {
+    flex: 1;
+}
+
+.todo-list .header > .description,
+.todo-list .todo > .description{
+    flex: 3;
+}

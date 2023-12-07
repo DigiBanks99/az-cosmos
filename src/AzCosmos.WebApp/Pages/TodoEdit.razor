@@ -1,0 +1,58 @@
+﻿@page "/todo/{id}"
+@using AzCosmos
+@inject TodosCollection Collection;
+
+<h3>Edit: Todo</h3>
+
+<div class="edit-form">
+@if (_todo is null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@_todo" OnValidSubmit="@Submit" FormName="todo" class="form">
+        <InputText @bind-Value="_todo.Id" hidden></InputText>
+        <label>
+            Description:
+            <InputText id="description" @bind-Value="_todo.Description"/>
+        </label>
+        <label>
+            Category:
+            <InputText id="category" @bind-Value="_todo.Category"/>
+        </label>
+        <label>
+            Status
+            <InputSelect id="status" @bind-Value="_todo.Status" TValue="Status">
+                @foreach (object? status in Enum.GetValues(typeof(Status)))
+                {
+                    <option value="@status">@status</option>
+                }
+            </InputSelect>
+        </label>
+        <button type="submit">Save</button>
+    </EditForm>
+}
+</div>
+
+@code
+{
+    private readonly CancellationTokenSource _cts = new();
+    private Todo? _todo;
+
+    [Parameter]
+    public string? Id { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        _todo ??= await Collection.GetTodoAsync(Id, _cts.Token);
+    }
+
+    private async Task Submit(EditContext editContext)
+    {
+        if (_todo is null)
+        {
+            return;
+        }
+        await Collection.UpdateTodoAsync(_todo, _cts.Token);
+    }
+}

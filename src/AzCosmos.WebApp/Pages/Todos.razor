@@ -1,0 +1,43 @@
+﻿@page "/todos"
+@inject TodosCollection Collection;
+<h3>Todos</h3>
+
+@if (_isLoading)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="todo-list">
+        <div class="header">
+            <div class="description">Description</div>
+            <div class="category">Category</div>
+            <div class="status">Status</div>
+        </div>
+        @foreach (Todo todo in _todos)
+        {
+            <div class="todo">
+                <div class="description">
+                    <a href="todo/@todo.Id" target="_self">@todo.Description</a>
+                </div>
+                <div class="category">@todo.Category</div>
+                <div class="status">@todo.Status</div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private readonly CancellationTokenSource _cts = new();
+    private readonly List<Todo> _todos = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await foreach (Todo todo in Collection.GetAllAsync(_cts.Token))
+        {
+            _isLoading = false;
+            _todos.Add(todo);
+        }
+    }
+}
